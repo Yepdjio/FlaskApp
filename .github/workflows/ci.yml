@@ -35,6 +35,7 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: tests   # le build attend que le job tests réussisse
+    if: ${{ success() }}  # ne s'exécute que si le job tests a réussi
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
