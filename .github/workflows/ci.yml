@@ -30,10 +30,11 @@ jobs:
       - name: Run unit tests
         run: pytest
 
-  # Job 2 : construction Docker (s’exécute en parallèle)
+  # Job 2 : construction Docker (ne s’exécute que si les tests passent)
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
+    needs: tests   # le build attend que le job tests réussisse
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
