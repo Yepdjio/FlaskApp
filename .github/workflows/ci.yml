@@ -30,6 +30,20 @@ jobs:
       - name: Run unit tests
         run: pytest
 
+      # Étape email si les tests échouent
+      - name: Send email if tests fail
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.example.com
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "CI Tests Failed for FlaskApp"
+          body: "Le job de tests unitaires a échoué. Veuillez vérifier le workflow."
+          to: example@gmail.com
+          from: example@gmail.com
+
   # Job 2 : construction Docker (ne s’exécute que si les tests passent)
   build-and-push:
     name: Build and Push Docker Image
