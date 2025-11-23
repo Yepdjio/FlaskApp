@@ -9,9 +9,10 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  # Job 1 : tests unitaires
+  tests:
+    name: Run Unit Tests
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,29 +27,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests
-        run: |
-          pytest
+      - name: Run unit tests
+        run: pytest
+
+  # Job 2 : construction Docker (s’exécute en parallèle)
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image to Docker Hub
+      - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-         context: .
-         push: true
-         tags: ${{ secrets.DOCKER_USERNAME }}/flaskapp:latest
-
-      # Étapes pour l'exercice multi-registres
-      #- name: Log in to Private Registry (fictif)
-       # run: |
-          #echo ${{ secrets.PRIVATE_REGISTRY_PASS }} | docker login private-registry.com -u "${{ secrets.PRIVATE_REGISTRY_USER }}" --password-stdin
-
-      - name: Push to Private Registry (fictif)
-        run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/flaskapp:latest private-registry.com/flaskapp:latest
-          echo "Simulating push to private registry"
-
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/flaskapp:latest
