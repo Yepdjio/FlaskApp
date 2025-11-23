@@ -39,6 +39,17 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/flaskapp:latest .
 
-      - name: Push Docker image
+      - name: Push Docker image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/flaskapp:latest
+
+      # Étapes pour l'exercice multi-registres
+      - name: Log in to Private Registry (fictif)
+        run: |
+          echo ${{ secrets.PRIVATE_REGISTRY_PASS }} | docker login private-registry.com -u "${{ secrets.PRIVATE_REGISTRY_USER }}" --password-stdin
+
+      - name: Push to Private Registry (fictif)
+        run: |
+          docker tag ${{ secrets.DOCKER_USERNAME }}/flaskapp:latest private-registry.com/flaskapp:latest
+          echo "Simulating push to private registry"
+
